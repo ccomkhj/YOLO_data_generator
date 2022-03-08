@@ -8,7 +8,7 @@ After segmentation, if the image contains only one class, this is the effective 
 input \
   |-- image1.jpg \
   |-- image2.jpg \
-  |-- ... \
+  |-- ... 
 
 ## 2. run coco_gen.py
 `python coco_gen.py --input {input mask dir} --putput {output save dir} --type {class}`
