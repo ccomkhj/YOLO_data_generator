@@ -10,8 +10,8 @@ input \
   |-- image2.jpg \
   |-- ... 
 
-## 2. run coco_gen.py
-`python coco_gen.py --input {input mask dir} --putput {output save dir} --type {class}`
+## 2. run yolo_auto_gen.py
+`python yolo_auto_gen.py --input {input mask dir} --putput {output save dir} --type {class}`
 
 output \
   |-- image1.txt \
@@ -19,6 +19,6 @@ output \
   |-- ... 
 
 
-![plot](./demo/coco_gen.jpg)
+![plot](./demo/yolo_gen.jpg)
 
 If you have multiple classes in an image, you should manually change the class in the text.
