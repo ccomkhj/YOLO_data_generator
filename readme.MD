@@ -22,3 +22,8 @@ output \
 ![plot](./demo/yolo_gen.jpg)
 
 If you have multiple classes in an image, you should manually change the class in the text.
+
+## 3. (optional) check_box.py
+`python check_box.py --label {label dir} --image {raw image dir} --save {saving dir}` \
+
+![plot](./demo/draw_box.png)

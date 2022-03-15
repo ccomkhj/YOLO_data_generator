@@ -1,3 +1,6 @@
 input
 output
 __pycache__
+save_image
+mask
+.vscode

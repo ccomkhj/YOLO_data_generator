@@ -15,7 +15,7 @@ def parse_args():
         description="Crop image generator")
 
     parser.add_argument("--input",
-                        default='input/lettuce',
+                        default='mask',
                         help="Location of input image directory to be cropped.")
 
     parser.add_argument("--output",
@@ -23,7 +23,7 @@ def parse_args():
                         help="Location of output directory to save cropped images.")
 
     parser.add_argument("--type",
-                        default='lettuce',
+                        default='plants',
                         help="Types of the cropped image.")
 
     args = parser.parse_args()
@@ -65,8 +65,8 @@ def group(mask, sensitivity, debug=False, intact=True):
 
         cropped = img[roi[0]:roi[1], roi[2]:roi[3]]
 
-        if cv2.connectedComponents(cropped)[0] != 2: # if there is more than one object in the cropped mask,
-            continue
+        # if cv2.connectedComponents(cropped)[0] != 2: # if there is more than one object in the cropped mask, #TODO: understand it.
+        #     continue
 
         if intact and any(x in roi for x in [0, img.shape[0], img.shape[1]]): # if a cropped image is located on the image border,
             continue
@@ -108,11 +108,43 @@ def generate(type, center_x, center_y, w_ratio, h_ratio, txt_path, CLASS):
     with open(txt_path + '.txt', 'a') as f:
         f.write(('%g ' * 5 + '\n') % (CLASS.index(type), center_x, center_y, w_ratio, h_ratio)) 
 
+def filter_roi(rois):
+    def get_area(roi):
+        return (roi[1]-roi[0])*(roi[3]-roi[2])
+
+    rois.sort(key=get_area,reverse=True) # sort the bigger box, the ealier.
+
+    roi_memory = []
+    for i, roi in enumerate(rois):
+        if i == 0:
+            """ Biggest roi is always alive. """
+            roi_memory.append(roi)
+            continue
+
+        ty, by, tx, bx = roi
+
+        count = 0
+        """ append if the roi is inside the other roi, then ignore it """
+        for j in range(i):
+            if ty >= rois[j][0] and by <= rois[j][1] and tx >= rois[j][2] and bx <= rois[j][3]:
+                continue
+            else:
+                count += 1
+
+
+        """ if roi is not included in none of other rois"""    
+        if count == i:
+            roi_memory.append(roi)
+                
+
+    return roi_memory
+
+
 if __name__ == "__main__":
     args = parse_args()
     input_dir = Path(args.input)
 
-    CLASS = ['lettuce', 'basil']
+    CLASS = ['plants']
 
     mask_files = list(sorted(input_dir.glob("*.png" or "*.jpg" or "*.jpeg")))
     logger.info(f"Found {len(mask_files)} mask(s) in {args.input}:\n{mask_files}")
@@ -124,8 +156,12 @@ if __name__ == "__main__":
     logger.info(f"Writing results to {output_dir}")
 
     for mask_file in mask_files:
+
         mask = cv2.cvtColor(cv2.imread(mask_file.__str__()), cv2.COLOR_BGR2GRAY)
-        _, rois = group(mask, sensitivity=0.0002, debug=False)
+        print(mask_file)
+        _, rois = group(mask, sensitivity=0.0002, debug=False, intact=False)
+
+        rois = filter_roi(rois) # filter out rois inside the other roi
         
         txt_name = os.path.join(output_dir,mask_file.stem)
 
