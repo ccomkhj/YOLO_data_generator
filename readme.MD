@@ -11,7 +11,7 @@ input \
   |-- ... 
 
 ## 2. run yolo_auto_gen.py
-`python yolo_auto_gen.py --input {input mask dir} --putput {output save dir} --type {class}`
+`python yolo_auto_gen.py --input {input mask dir} --output {output save dir} --type {class of object}`
 
 output \
   |-- image1.txt \
@@ -24,6 +24,6 @@ output \
 If you have multiple classes in an image, you should manually change the class in the text.
 
 ## 3. (optional) check_box.py
-`python check_box.py --label {label dir} --image {raw image dir} --save {saving dir}` \
+`python check_box.py --label {label dir} --image {raw image dir} --save {saving dir}` 
 
 ![plot](./demo/draw_box.png)
